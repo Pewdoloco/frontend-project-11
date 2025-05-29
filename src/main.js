@@ -10,7 +10,7 @@ const state = {
   },
 };
 
-const watchedState = view(state);
+     const watchedState = view(state)
 
 const schema = yup.string().url('Нужен валидный URL').required('URL валидный');
 
