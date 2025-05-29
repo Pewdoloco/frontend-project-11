@@ -1,4 +1,5 @@
 import onChange from 'on-change';
+import i18next from './i18n.js';
 
 export default (state) => {
   const watchedState = onChange(state, (path, value) => {
@@ -14,7 +15,7 @@ export default (state) => {
       if (value) {
         rssInput.classList.add('is-invalid');
         feedbackElement.classList.add('text-danger');
-        feedbackElement.textContent = value.message;
+        feedbackElement.textContent = i18next.t(value);
       } else {
         rssInput.classList.remove('is-invalid');
         feedbackElement.classList.remove('text-danger');
@@ -27,7 +28,7 @@ export default (state) => {
       rssInput.focus();
       feedbackElement.classList.remove('text-danger');
       feedbackElement.classList.add('text-success');
-      feedbackElement.textContent = 'RSS feed added successfully';
+      feedbackElement.textContent = i18next.t('success');
     }
   });
 
