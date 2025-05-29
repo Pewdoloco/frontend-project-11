@@ -1,21 +1,41 @@
 import "./style.css";
+import * as yup from 'yup';
+import view from './view.js';
 
-document.getElementById("rss-from").addEventListener("submit", (event) => {
+const state = {
+  feeds: [],
+  form: {
+    valid: false,
+    error: null,
+  },
+};
+
+const watchedState = view(state);
+
+const schema = yup.string().url('Нужен валидный URL').required('URL валидный');
+
+document.getElementById('rss-form').addEventListener('submit', (event) => {
   event.preventDefault();
-  const rssUrl = document.getElementById("rss-url").ariaValueMax;
+
+  const rssUrl = document.getElementById('rss-url').value;
+  const isDuplicate = state.feeds.includes(rssUrl);
+
   new Promise((resolve, reject) => {
-    if (rssUrl) {
-      resolve(`RSS URL received: ${rssUrl}`);
+    if (isDuplicate) {
+      reject(new Error('This RSS feed is already added'));
     } else {
-      reject(new Error("URL is empty"));
+      schema.validate(rssUrl)
+        .then(() => resolve(rssUrl))
+        .catch((err) => reject(err));
     }
   })
-    .then((message) => {
-      console.log(message);
-      
-      
+    .then((validUrl) => {
+      watchedState.form.error = null;
+      watchedState.form.valid = true;
+      watchedState.feeds.push(validUrl);
     })
-    .catch((error) => {
-      console.error(error.message);
+    .catch((err) => {
+      watchedState.form.valid = false;
+      watchedState.form.error = err;
     });
 });
