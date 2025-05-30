@@ -76,11 +76,15 @@ i18next.init().then(() => {
               );
             }
           })
-          .catch((err) => reject(
-            err.cause
-              ? err
-              : new Error('Validation error', { cause: { key: err.message } }),
-          ));
+          .catch((err) => {
+            if (err.key) {
+              reject(
+                new Error('Validation error', { cause: { key: err.key } }),
+              );
+            } else {
+              reject(err);
+            }
+          });
       }
     })
       .then(({ feed, posts, url }) => {
@@ -104,7 +108,7 @@ i18next.init().then(() => {
       })
       .catch((err) => {
         watchedState.form.valid = false;
-        watchedState.form.error = err.cause.key;
+        watchedState.form.error = err.cause ? err.cause.key : 'errors.network';
       });
   });
 });
