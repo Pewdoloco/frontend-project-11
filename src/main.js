@@ -38,6 +38,31 @@ const fetchRSS = (url) => {
     });
 };
 
+const checkForUpdates = () => {
+  const promises = state.feeds.map((feed) => fetchRSS(feed.url)
+    .then((xmlString) => {
+      const { posts } = parseRSS(xmlString);
+      const existingLinks = new Set(state.posts.map((post) => post.link));
+      const newPosts = posts
+        .filter((post) => !existingLinks.has(post.link))
+        .map((post) => ({
+          id: generateId(),
+          feedId: feed.id,
+          title: post.title,
+          link: post.link,
+        }));
+      if (newPosts.length > 0) {
+        watchedState.posts.push(...newPosts);
+      }
+    })
+    .catch(() => {
+    }));
+
+  Promise.allSettled(promises).then(() => {
+    setTimeout(checkForUpdates, 5000);
+  });
+};
+
 i18next.init().then(() => {
   document.querySelectorAll('[data-i18n]').forEach((element) => {
     const key = element.dataset.i18n;
@@ -111,4 +136,5 @@ i18next.init().then(() => {
         watchedState.form.error = err.cause ? err.cause.key : 'errors.network';
       });
   });
+  checkForUpdates();
 });
