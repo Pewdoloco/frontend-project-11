@@ -19,7 +19,7 @@ jobs:
       - name: Install dependencies
         run: npm install
       - name: Run ESLint
-        run: npx eslint .
+        run: npx eslint . --ignore-pattern 'dist/**'
       - name: SonarQube Scan
         uses: SonarSource/sonarqube-scan-action@v5
         env:

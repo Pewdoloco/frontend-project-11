@@ -1,6 +1,10 @@
 import * as yup from 'yup';
-import i18next from './i18n.js';
-import view from './view.js';
+import axios from 'axios';
+import i18next from './i18n';
+import view from './view';
+import { parseRSS } from './parser';
+
+const generateId = () => Math.random().toString(36).slice(2);
 
 yup.setLocale({
   string: {
@@ -11,15 +15,28 @@ yup.setLocale({
 
 const state = {
   feeds: [],
+  posts: [],
   form: {
     valid: false,
-    error: null, 
+    error: null,
   },
 };
 
 const watchedState = view(state);
 
 const schema = yup.string().url().required();
+
+const fetchRSS = (url) => {
+  const proxyUrl = `https://allorigins.hexlet.app/get?disableCache=true&url=${encodeURIComponent(
+    url,
+  )}`;
+  return axios
+    .get(proxyUrl)
+    .then((response) => response.data.contents)
+    .catch(() => {
+      throw new Error('Network error', { cause: { key: 'errors.network' } });
+    });
+};
 
 i18next.init().then(() => {
   document.querySelectorAll('[data-i18n]').forEach((element) => {
@@ -36,25 +53,58 @@ i18next.init().then(() => {
     event.preventDefault();
     const rssUrl = document.getElementById('rss-url').value;
 
-    const isDuplicate = state.feeds.includes(rssUrl);
+    const isDuplicate = state.feeds.some((feed) => feed.url === rssUrl);
 
     new Promise((resolve, reject) => {
       if (isDuplicate) {
-        reject({ key: 'errors.duplicate' });
+        reject(
+          new Error('Duplicate feed', { cause: { key: 'errors.duplicate' } }),
+        );
       } else {
-        schema.validate(rssUrl)
-          .then(() => resolve(rssUrl))
-          .catch((err) => reject({ key: err.message }));
+        schema
+          .validate(rssUrl)
+          .then(() => fetchRSS(rssUrl))
+          .then((xmlString) => {
+            try {
+              const { feed, posts } = parseRSS(xmlString);
+              resolve({ feed, posts, url: rssUrl });
+            } catch (err) {
+              reject(
+                new Error('Invalid RSS', {
+                  cause: { key: 'errors.invalid_rss' },
+                }),
+              );
+            }
+          })
+          .catch((err) => reject(
+            err.cause
+              ? err
+              : new Error('Validation error', { cause: { key: err.message } }),
+          ));
       }
     })
-      .then((validUrl) => {
+      .then(({ feed, posts, url }) => {
+        const feedId = generateId();
+        watchedState.feeds.push({
+          id: feedId,
+          title: feed.title,
+          description: feed.description,
+          url,
+        });
+        watchedState.posts.push(
+          ...posts.map((post) => ({
+            id: generateId(),
+            feedId,
+            title: post.title,
+            link: post.link,
+          })),
+        );
         watchedState.form.error = null;
         watchedState.form.valid = true;
-        watchedState.feeds.push(validUrl);
       })
       .catch((err) => {
         watchedState.form.valid = false;
-        watchedState.form.error = err.key;
+        watchedState.form.error = err.cause.key;
       });
   });
 });
