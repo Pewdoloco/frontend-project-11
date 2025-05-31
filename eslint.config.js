@@ -18,7 +18,7 @@ export default [
       'import': pluginImport,
     },
     rules: {
-      'import/prefer-default-export': 'off',
+      'import/prefer-default-export': 0,
       'import/extensions': [
         'error',
         'ignorePackages',
@@ -36,7 +36,7 @@ export default [
       'prefer-promise-reject-errors': 'off',
       '@stylistic/semi': ['error', 'never'],
       '@stylistic/brace-style': ['error', '1tbs'],
-      '@stylistic/arrow-parens': ['error', 'as-needed'],
+      '@stylistic/arrow-parens': ['error', 'always'],
       '@stylistic/comma-dangle': ['error', 'always-multiline'],
       '@stylistic/quote-props': ['error', 'consistent-as-needed'],
       '@stylistic/eol-last': ['error', 'always'],

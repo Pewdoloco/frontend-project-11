@@ -1,7 +1,7 @@
 import onChange from 'on-change'
 import i18next from './i18n'
 
-export default state => {
+export default (state) => {
   const watchedState = onChange(state, (path, value) => {
     const rssInput = document.getElementById('input-url')
     const feedbackElement = document.querySelector('.feedback')
@@ -16,8 +16,7 @@ export default state => {
         rssInput.classList.add('is-invalid')
         feedbackElement.classList.add('text-danger')
         feedbackElement.textContent = i18next.t(value)
-      }
-      else {
+      } else {
         rssInput.classList.remove('is-invalid')
         feedbackElement.classList.remove('text-danger')
         feedbackElement.textContent = ''
@@ -42,7 +41,7 @@ export default state => {
       feedsSection.appendChild(feedsTitle)
       const feedsList = document.createElement('ul')
       feedsList.classList.add('list-group')
-      state.feeds.forEach(feed => {
+      state.feeds.forEach((feed) => {
         const li = document.createElement('li')
         li.classList.add('list-group-item')
         li.innerHTML = `<h3>${feed.title}</h3><p>${feed.description}</p>`
@@ -56,10 +55,10 @@ export default state => {
       postsSection.appendChild(postsTitle)
       const postsList = document.createElement('ul')
       postsList.classList.add('list-group')
-      state.posts.forEach(post => {
+      state.posts.forEach((post) => {
         const li = document.createElement('li')
         li.classList.add('list-group-item', 'd-flex', 'justify-content-between', 'align-items-center')
-        const isRead = state.readPosts.some(read => read.id === post.id)
+        const isRead = state.readPosts.some((read) => read.id === post.id)
         const linkClass = isRead ? 'fw-normal' : 'fw-bold'
         li.innerHTML = `
           <a href="${post.link}" class="${linkClass}" target="_blank">${post.title}</a>
@@ -80,7 +79,7 @@ export default state => {
     }
 
     if (path === 'modal.postId' && value) {
-      const post = state.posts.find(p => p.id === value)
+      const post = state.posts.find((p) => p.id === value)
       if (post && modal && modalTitle && modalDescription && modalLink && window.bootstrap) {
         modalTitle.textContent = post.title
         modalDescription.textContent = post.description
