@@ -18,15 +18,6 @@ export default [
       'import': pluginImport,
     },
     rules: {
-      'import/extensions': [
-        'error',
-        'ignorePackages',
-        {
-          js: 'never',
-          mjs: 'never',
-          cjs: 'never',
-        },
-      ],
       'no-param-reassign': ['error', { props: false }],
       'import/no-extraneous-dependencies': [
         'error',
