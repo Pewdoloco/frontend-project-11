@@ -110,7 +110,12 @@ i18next.init().then(() => {
             }
           })
           .catch((err) => {
-            const errorKey = err.errors && err.errors.length > 0 ? err.errors[0].key : 'errors.url';
+            let errorKey = 'errors.url';
+            if (err.name === 'ValidationError') {
+              if (err.type === 'required' || (err.errors && err.errors.includes('this is a required field'))) {
+                errorKey = 'errors.required';
+              }
+            }
             reject(new Error('Validation error', { cause: { key: errorKey } }));
           });
       }
