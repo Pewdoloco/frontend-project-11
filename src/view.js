@@ -16,7 +16,8 @@ export default state => {
         rssInput.classList.add('is-invalid')
         feedbackElement.classList.add('text-danger')
         feedbackElement.textContent = i18next.t(value)
-      } else {
+      }
+      else {
         rssInput.classList.remove('is-invalid')
         feedbackElement.classList.remove('text-danger')
         feedbackElement.textContent = ''

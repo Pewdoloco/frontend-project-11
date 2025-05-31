@@ -82,7 +82,8 @@ i18next.init().then(() => {
     if (key.startsWith('[placeholder]')) {
       const actualKey = key.replace('[placeholder]', '')
       element.placeholder = i18next.t(actualKey)
-    } else {
+    }
+    else {
       element.textContent = i18next.t(key)
     }
   })
@@ -99,14 +100,16 @@ i18next.init().then(() => {
     new Promise((resolve, reject) => {
       if (isDuplicate) {
         reject(new Error('Duplicate feed', { cause: { key: 'errors.duplicate' } }))
-      } else {
+      }
+      else {
         schema.validate(rssUrl, { abortEarly: false })
           .then(() => fetchRSS(rssUrl))
           .then(xmlString => {
             try {
               const { feed, posts } = parseRSS(xmlString)
               resolve({ feed, posts, url: rssUrl })
-            } catch {
+            }
+            catch {
               reject(new Error('Invalid RSS', { cause: { key: 'errors.invalid_rss' } }))
             }
           })
@@ -117,7 +120,8 @@ i18next.init().then(() => {
                 errorKey = 'errors.required'
               }
               reject(new Error('Validation error', { cause: { key: errorKey } }))
-            } else {
+            }
+            else {
               reject(err)
             }
           })
