@@ -99,7 +99,7 @@ i18next.init().then(() => {
       if (isDuplicate) {
         reject(new Error('Duplicate feed', { cause: { key: 'errors.duplicate' } }));
       } else {
-        schema.validate(rssUrl)
+        schema.validate(rssUrl, { abortEarly: false })
           .then(() => fetchRSS(rssUrl))
           .then((xmlString) => {
             try {
@@ -110,11 +110,8 @@ i18next.init().then(() => {
             }
           })
           .catch((err) => {
-            if (err.key) {
-              reject(new Error('Validation error', { cause: { key: err.key } }));
-            } else {
-              reject(err);
-            }
+            const errorKey = err.errors && err.errors.length > 0 ? err.errors[0].key : 'errors.url';
+            reject(new Error('Validation error', { cause: { key: errorKey } }));
           });
       }
     })
