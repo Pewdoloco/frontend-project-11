@@ -17,11 +17,7 @@ export default [
       '@stylistic': stylistic,
       'import': pluginImport,
     },
-    rules: {      
-      'import/no-extraneous-dependencies': [
-        'error',
-        { devDependencies: ['vite.config.js', 'eslint.config.js'] },
-      ],
+    rules: {
       'prefer-promise-reject-errors': 'off',
       '@stylistic/semi': ['error', 'never'],
       '@stylistic/brace-style': ['error', '1tbs'],
