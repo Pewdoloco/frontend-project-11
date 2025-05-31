@@ -17,13 +17,5 @@ export default [
       '@stylistic': stylistic,
       'import': pluginImport,
     },
-    rules: {
-      '@stylistic/semi': ['error', 'never'],
-      '@stylistic/brace-style': ['error', '1tbs'],
-      '@stylistic/arrow-parens': ['error', 'always'],
-      '@stylistic/comma-dangle': ['error', 'always-multiline'],
-      '@stylistic/quote-props': ['error', 'consistent-as-needed'],
-      '@stylistic/eol-last': ['error', 'always'],
-    },
   },
 ]
