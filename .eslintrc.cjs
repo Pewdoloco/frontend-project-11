@@ -10,7 +10,7 @@ module.exports = {
   },
   ignorePatterns: ['dist/**'],
   rules: {
-    'no-console': 'warn',
+    'no-console': 'off',
     'import/prefer-default-export': 'off',
     'import/extensions': [
       'error',

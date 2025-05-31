@@ -39,7 +39,8 @@ const fetchRSS = (url) => {
       }
       return response.data.contents;
     })
-    .catch(() => {
+    .catch((err) => {
+      console.error('Fetch RSS error:', err.message); // Логирование для тестов
       throw new Error('Network error', { cause: { key: 'errors.network' } });
     });
 };
@@ -67,8 +68,8 @@ const checkForUpdates = () => {
         watchedState.posts.unshift(...newPosts);
       }
     })
-    .catch(() => {
-      // Игнорирование ошибкок
+    .catch((err) => {
+      console.error('Update RSS error:', err.message); // Логирование для тестов
     }));
 
   Promise.allSettled(promises).then(() => {
@@ -107,10 +108,12 @@ i18next.init().then(() => {
               const { feed, posts } = parseRSS(xmlString);
               resolve({ feed, posts, url: rssUrl });
             } catch (err) {
+              console.error('Parse RSS error:', err.message); // Логирование для тестов
               reject(new Error('Invalid RSS', { cause: { key: 'errors.invalid_rss' } }));
             }
           })
           .catch((err) => {
+            console.error('Validation error:', err.message); // Логирование для тестов
             if (err.key) {
               reject(new Error('Validation error', { cause: { key: err.key } }));
             } else {
