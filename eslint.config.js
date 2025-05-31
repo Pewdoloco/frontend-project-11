@@ -17,8 +17,7 @@ export default [
       '@stylistic': stylistic,
       'import': pluginImport,
     },
-    rules: {
-      'no-param-reassign': ['error', { props: false }],
+    rules: {      
       'import/no-extraneous-dependencies': [
         'error',
         { devDependencies: ['vite.config.js', 'eslint.config.js'] },
