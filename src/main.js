@@ -50,13 +50,13 @@ const checkForUpdates = () => {
     return
   }
 
-  const promises = state.feeds.map((feed) => fetchRSS(feed.url)
+  const promises = state.feeds.map(feed => fetchRSS(feed.url)
     .then((xmlString) => {
       const { posts } = parseRSS(xmlString)
-      const existingLinks = new Set(state.posts.map((post) => post.link))
+      const existingLinks = new Set(state.posts.map(post => post.link))
       const newPosts = posts
-        .filter((post) => !existingLinks.has(post.link))
-        .map((post) => ({
+        .filter(post => !existingLinks.has(post.link))
+        .map(post => ({
           id: generateId(),
           feedId: feed.id,
           title: post.title,
@@ -95,7 +95,7 @@ i18next.init().then(() => {
     watchedState.form.valid = false
     watchedState.form.error = null
 
-    const isDuplicate = state.feeds.some((feed) => feed.url === rssUrl)
+    const isDuplicate = state.feeds.some(feed => feed.url === rssUrl)
 
     new Promise((resolve, reject) => {
       if (isDuplicate) {
@@ -136,7 +136,7 @@ i18next.init().then(() => {
           description: feed.description,
         })
         const newPosts = posts
-          .map((post) => ({
+          .map(post => ({
             id: generateId(),
             feedId,
             title: post.title,

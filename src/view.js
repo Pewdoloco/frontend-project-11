@@ -59,7 +59,7 @@ export default (state) => {
       state.posts.forEach((post) => {
         const li = document.createElement('li')
         li.classList.add('list-group-item', 'd-flex', 'justify-content-between', 'align-items-center')
-        const isRead = state.readPosts.some((read) => read.id === post.id)
+        const isRead = state.readPosts.some(read => read.id === post.id)
         const linkClass = isRead ? 'fw-normal' : 'fw-bold'
         li.innerHTML = `
           <a href="${post.link}" class="${linkClass}" target="_blank">${post.title}</a>
@@ -80,7 +80,7 @@ export default (state) => {
     }
 
     if (path === 'modal.postId' && value) {
-      const post = state.posts.find((p) => p.id === value)
+      const post = state.posts.find(p => p.id === value)
       if (post && modal && modalTitle && modalDescription && modalLink && window.bootstrap) {
         modalTitle.textContent = post.title
         modalDescription.textContent = post.description
