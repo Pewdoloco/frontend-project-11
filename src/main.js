@@ -35,7 +35,7 @@ const fetchRSS = (url) => {
   return axios.get(proxyUrl)
     .then((response) => {
       if (!response.data.contents) {
-        throw new Error('Invalid response from proxy');
+        throw new Error('Invalid response from proxy', { cause: { key: 'errors.network' } });
       }
       return response.data.contents;
     })
@@ -110,13 +110,15 @@ i18next.init().then(() => {
             }
           })
           .catch((err) => {
-            let errorKey = 'errors.url';
             if (err.name === 'ValidationError') {
+              let errorKey = 'errors.url';
               if (err.type === 'required' || (err.errors && err.errors.includes('this is a required field'))) {
                 errorKey = 'errors.required';
               }
+              reject(new Error('Validation error', { cause: { key: errorKey } }));
+            } else {
+              reject(err);
             }
-            reject(new Error('Validation error', { cause: { key: errorKey } }));
           });
       }
     })
