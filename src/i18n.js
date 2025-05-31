@@ -18,9 +18,9 @@ const resources = {
         required: 'Must not be empty',
         duplicate: 'RSS already exists',
         network: 'Network error',
-        invalid_rss: 'Resource does not contain valid RSS'
-      }
-    }
+        invalid_rss: 'Resource does not contain valid RSS',
+      },
+    },
   },
   ru: {
     translation: {
@@ -38,10 +38,10 @@ const resources = {
         required: 'Не должно быть пустым',
         duplicate: 'RSS уже существует',
         network: 'Ошибка сети',
-        invalid_rss: 'Ресурс не содержит валидный RSS'
-      }
-    }
-  }
+        invalid_rss: 'Ресурс не содержит валидный RSS',
+      },
+    },
+  },
 }
 
 i18next
@@ -51,8 +51,8 @@ i18next
     lng: 'ru',
     fallbackLng: 'ru',
     detection: {
-      order: ['navigator', 'htmlTag', 'path', 'subdomain']
-    }
+      order: ['navigator', 'htmlTag', 'path', 'subdomain'],
+    },
   })
 
 export default i18next

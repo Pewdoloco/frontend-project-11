@@ -9,8 +9,8 @@ const generateId = () => Math.random().toString(36).slice(2)
 yup.setLocale({
   string: {
     url: () => ({ key: 'errors.url' }),
-    required: () => ({ key: 'errors.required' })
-  }
+    required: () => ({ key: 'errors.required' }),
+  },
 })
 
 const state = {
@@ -19,27 +19,27 @@ const state = {
   readPosts: [],
   form: {
     valid: false,
-    error: null
+    error: null,
   },
   modal: {
-    postId: null
-  }
+    postId: null,
+  },
 }
 
 const watchedState = view(state)
 
 const schema = yup.string().url().required()
 
-const fetchRSS = url => {
+const fetchRSS = (url) => {
   const proxyUrl = `https://allorigins.hexlet.app/get?disableCache=true&url=${encodeURIComponent(url)}`
   return axios.get(proxyUrl)
-    .then(response => {
+    .then((response) => {
       if (!response.data.contents) {
         throw new Error('Invalid response from proxy', { cause: { key: 'errors.network' } })
       }
       return response.data.contents
     })
-    .catch(_ => {
+    .catch(() => {
       throw new Error('Network error', { cause: { key: 'errors.network' } })
     })
 }
@@ -50,24 +50,24 @@ const checkForUpdates = () => {
     return
   }
 
-  const promises = state.feeds.map(feed => fetchRSS(feed.url)
-    .then(xmlString => {
+  const promises = state.feeds.map((feed) => fetchRSS(feed.url)
+    .then((xmlString) => {
       const { posts } = parseRSS(xmlString)
-      const existingLinks = new Set(state.posts.map(post => post.link))
+      const existingLinks = new Set(state.posts.map((post) => post.link))
       const newPosts = posts
-        .filter(post => !existingLinks.has(post.link))
-        .map(post => ({
+        .filter((post) => !existingLinks.has(post.link))
+        .map((post) => ({
           id: generateId(),
           feedId: feed.id,
           title: post.title,
           link: post.link,
-          description: post.description
+          description: post.description,
         }))
       if (newPosts.length > 0) {
         watchedState.posts.unshift(...newPosts)
       }
     })
-    .catch(_ => {
+    .catch(() => {
       // Игноририрование ошибок
     }))
 
@@ -77,7 +77,7 @@ const checkForUpdates = () => {
 }
 
 i18next.init().then(() => {
-  document.querySelectorAll('[data-i18n]').forEach(element => {
+  document.querySelectorAll('[data-i18n]').forEach((element) => {
     const key = element.dataset.i18n
     if (key.startsWith('[placeholder]')) {
       const actualKey = key.replace('[placeholder]', '')
@@ -87,14 +87,14 @@ i18next.init().then(() => {
     }
   })
 
-  document.getElementById('rss-form').addEventListener('submit', event => {
+  document.getElementById('rss-form').addEventListener('submit', (event) => {
     event.preventDefault()
     const rssUrl = document.getElementById('input-url').value
 
     watchedState.form.valid = false
     watchedState.form.error = null
 
-    const isDuplicate = state.feeds.some(feed => feed.url === rssUrl)
+    const isDuplicate = state.feeds.some((feed) => feed.url === rssUrl)
 
     new Promise((resolve, reject) => {
       if (isDuplicate) {
@@ -102,15 +102,15 @@ i18next.init().then(() => {
       } else {
         schema.validate(rssUrl, { abortEarly: false })
           .then(() => fetchRSS(rssUrl))
-          .then(xmlString => {
+          .then((xmlString) => {
             try {
               const { feed, posts } = parseRSS(xmlString)
               resolve({ feed, posts, url: rssUrl })
-            } catch (err) {
+            } catch {
               reject(new Error('Invalid RSS', { cause: { key: 'errors.invalid_rss' } }))
             }
           })
-          .catch(err => {
+          .catch((err) => {
             if (err.name === 'ValidationError') {
               let errorKey = 'errors.url'
               if (err.type === 'required' || (err.errors && err.errors.includes('this is a required field'))) {
@@ -129,21 +129,21 @@ i18next.init().then(() => {
           id: feedId,
           url,
           title: feed.title,
-          description: feed.description
+          description: feed.description,
         })
         const newPosts = posts
-          .map(post => ({
+          .map((post) => ({
             id: generateId(),
             feedId,
             title: post.title,
             link: post.link,
-            description: post.description
+            description: post.description,
           }))
         watchedState.posts.unshift(...newPosts)
         watchedState.form.valid = true
         watchedState.form.error = null
       })
-      .catch(err => {
+      .catch((err) => {
         watchedState.form.valid = false
         watchedState.form.error = err.cause ? err.cause.key : 'errors.network'
       })

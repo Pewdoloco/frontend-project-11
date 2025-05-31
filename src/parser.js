@@ -1,4 +1,4 @@
-export const parseRSS = xmlString => {
+export const parseRSS = (xmlString) => {
   const parser = new DOMParser()
   const doc = parser.parseFromString(xmlString, 'application/xml')
 
@@ -14,13 +14,13 @@ export const parseRSS = xmlString => {
 
   const feed = {
     title: channel.querySelector('title')?.textContent || 'Unnamed Feed',
-    description: channel.querySelector('description')?.textContent || ''
+    description: channel.querySelector('description')?.textContent || '',
   }
 
-  const posts = Array.from(channel.querySelectorAll('item')).map(item => ({
+  const posts = Array.from(channel.querySelectorAll('item')).map((item) => ({
     title: item.querySelector('title')?.textContent || 'Unnamed Post',
     link: item.querySelector('link')?.textContent || '#',
-    description: item.querySelector('description')?.textContent || 'No description available'
+    description: item.querySelector('description')?.textContent || 'No description available',
   }))
 
   return { feed, posts }

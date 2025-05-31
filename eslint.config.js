@@ -10,12 +10,12 @@ export default [
       globals: {
         browser: true,
         es2021: true,
-        node: true
-      }
+        node: true,
+      },
     },
     plugins: {
       '@stylistic': stylistic,
-      import: pluginImport
+      'import': pluginImport,
     },
     rules: {
       'no-console': 'off',
@@ -26,18 +26,21 @@ export default [
         {
           js: 'never',
           mjs: 'never',
-          cjs: 'never'
-        }
+          cjs: 'never',
+        },
       ],
       'no-param-reassign': ['error', { props: false }],
       'import/no-extraneous-dependencies': [
         'error',
-        { devDependencies: ['vite.config.js', 'eslint.config.js'] }
+        { devDependencies: ['vite.config.js', 'eslint.config.js'] },
       ],
       'prefer-promise-reject-errors': 'off',
       '@stylistic/semi': ['error', 'never'],
       '@stylistic/brace-style': ['error', '1tbs'],
-      '@stylistic/arrow-parens': ['error', 'as-needed']
-    }
-  }
+      '@stylistic/arrow-parens': ['error', 'always'],
+      '@stylistic/comma-dangle': ['error', 'always-multiline'],
+      '@stylistic/quote-props': ['error', 'consistent-as-needed'],
+      '@stylistic/eol-last': ['error', 'always'],
+    },
+  },
 ]
