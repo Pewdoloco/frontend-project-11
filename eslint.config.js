@@ -18,7 +18,6 @@ export default [
       'import': pluginImport,
     },
     rules: {
-      'no-console': 0, 
       'import/prefer-default-export': 'off',
       'import/extensions': [
         'error',
