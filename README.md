@@ -5,4 +5,4 @@
 
 [![Vercel](https://vercel.com/button)](https://vercel.com/pewdolocos-projects/frontend-project-11)
 
-[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=Pewdoloco_frontend-project-11&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=Pewdoloco_frontend-project-11)
+[![SonarQube Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=Pewdoloco_frontend-project-11&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=Pewdoloco_frontend-project-11)
