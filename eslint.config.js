@@ -18,7 +18,6 @@ export default [
       'import': pluginImport,
     },
     rules: {
-      'prefer-promise-reject-errors': 'off',
       '@stylistic/semi': ['error', 'never'],
       '@stylistic/brace-style': ['error', '1tbs'],
       '@stylistic/arrow-parens': ['error', 'always'],
