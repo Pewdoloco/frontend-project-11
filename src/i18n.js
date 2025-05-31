@@ -5,7 +5,7 @@ const resources = {
   en: {
     translation: {
       title: 'RSS Aggregator',
-      placeholder: 'Enter RSS feed URL',
+      text: 'Enter RSS feed URL',
       button: 'Add Feed',
       success: 'RSS successfully loaded',
       feeds: 'Feeds',
@@ -25,7 +25,7 @@ const resources = {
   ru: {
     translation: {
       title: 'RSS Агрегатор',
-      placeholder: 'Введите URL RSS-потока',
+      text: 'Введите URL RSS-потока',
       button: 'Добавить поток',
       success: 'RSS успешно загружен',
       feeds: 'Фиды',

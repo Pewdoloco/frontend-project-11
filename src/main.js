@@ -39,8 +39,7 @@ const fetchRSS = (url) => {
       }
       return response.data.contents;
     })
-    .catch((err) => {
-      console.error('Fetch RSS error:', err.message); // Логирование для тестов
+    .catch(() => {
       throw new Error('Network error', { cause: { key: 'errors.network' } });
     });
 };
@@ -68,8 +67,7 @@ const checkForUpdates = () => {
         watchedState.posts.unshift(...newPosts);
       }
     })
-    .catch((err) => {
-      console.error('Update RSS error:', err.message); // Логирование для тестов
+    .catch(() => {
     }));
 
   Promise.allSettled(promises).then(() => {
@@ -90,7 +88,7 @@ i18next.init().then(() => {
 
   document.getElementById('rss-form').addEventListener('submit', (event) => {
     event.preventDefault();
-    const rssUrl = document.getElementById('rss-url').value;
+    const rssUrl = document.getElementById('input-url').value;
 
     watchedState.form.valid = false;
     watchedState.form.error = null;
@@ -108,12 +106,10 @@ i18next.init().then(() => {
               const { feed, posts } = parseRSS(xmlString);
               resolve({ feed, posts, url: rssUrl });
             } catch (err) {
-              console.error('Parse RSS error:', err.message); // Логирование для тестов
               reject(new Error('Invalid RSS', { cause: { key: 'errors.invalid_rss' } }));
             }
           })
           .catch((err) => {
-            console.error('Validation error:', err.message); // Логирование для тестов
             if (err.key) {
               reject(new Error('Validation error', { cause: { key: err.key } }));
             } else {

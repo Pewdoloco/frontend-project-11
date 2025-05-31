@@ -3,7 +3,7 @@ import i18next from './i18n';
 
 export default (state) => {
   const watchedState = onChange(state, (path, value) => {
-    const rssInput = document.getElementById('rss-url');
+    const rssInput = document.getElementById('input-url');
     const feedbackElement = document.querySelector('.feedback');
     const feedsContainer = document.getElementById('feeds-container');
     const modal = document.getElementById('postModal');
