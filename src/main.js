@@ -16,9 +16,13 @@ yup.setLocale({
 const state = {
   feeds: [],
   posts: [],
+  readPosts: [],
   form: {
     valid: false,
     error: null,
+  },
+  modal: {
+    postId: null,
   },
 };
 
@@ -27,18 +31,25 @@ const watchedState = view(state);
 const schema = yup.string().url().required();
 
 const fetchRSS = (url) => {
-  const proxyUrl = `https://allorigins.hexlet.app/get?disableCache=true&url=${encodeURIComponent(
-    url,
-  )}`;
-  return axios
-    .get(proxyUrl)
-    .then((response) => response.data.contents)
+  const proxyUrl = `https://allorigins.hexlet.app/get?disableCache=true&url=${encodeURIComponent(url)}`;
+  return axios.get(proxyUrl)
+    .then((response) => {
+      if (!response.data.contents) {
+        throw new Error('Invalid response from proxy');
+      }
+      return response.data.contents;
+    })
     .catch(() => {
       throw new Error('Network error', { cause: { key: 'errors.network' } });
     });
 };
 
 const checkForUpdates = () => {
+  if (state.feeds.length === 0) {
+    setTimeout(checkForUpdates, 5000);
+    return;
+  }
+
   const promises = state.feeds.map((feed) => fetchRSS(feed.url)
     .then((xmlString) => {
       const { posts } = parseRSS(xmlString);
@@ -50,12 +61,14 @@ const checkForUpdates = () => {
           feedId: feed.id,
           title: post.title,
           link: post.link,
+          description: post.description,
         }));
       if (newPosts.length > 0) {
-        watchedState.posts.push(...newPosts);
+        watchedState.posts.unshift(...newPosts);
       }
     })
     .catch(() => {
+      // Игнорирование ошибкок
     }));
 
   Promise.allSettled(promises).then(() => {
@@ -78,34 +91,28 @@ i18next.init().then(() => {
     event.preventDefault();
     const rssUrl = document.getElementById('rss-url').value;
 
+    watchedState.form.valid = false;
+    watchedState.form.error = null;
+
     const isDuplicate = state.feeds.some((feed) => feed.url === rssUrl);
 
     new Promise((resolve, reject) => {
       if (isDuplicate) {
-        reject(
-          new Error('Duplicate feed', { cause: { key: 'errors.duplicate' } }),
-        );
+        reject(new Error('Duplicate feed', { cause: { key: 'errors.duplicate' } }));
       } else {
-        schema
-          .validate(rssUrl)
+        schema.validate(rssUrl)
           .then(() => fetchRSS(rssUrl))
           .then((xmlString) => {
             try {
               const { feed, posts } = parseRSS(xmlString);
               resolve({ feed, posts, url: rssUrl });
             } catch (err) {
-              reject(
-                new Error('Invalid RSS', {
-                  cause: { key: 'errors.invalid_rss' },
-                }),
-              );
+              reject(new Error('Invalid RSS', { cause: { key: 'errors.invalid_rss' } }));
             }
           })
           .catch((err) => {
             if (err.key) {
-              reject(
-                new Error('Validation error', { cause: { key: err.key } }),
-              );
+              reject(new Error('Validation error', { cause: { key: err.key } }));
             } else {
               reject(err);
             }
@@ -115,26 +122,25 @@ i18next.init().then(() => {
       .then(({ feed, posts, url }) => {
         const feedId = generateId();
         watchedState.feeds.push({
-          id: feedId,
-          title: feed.title,
-          description: feed.description,
-          url,
+          id: feedId, url, title: feed.title, description: feed.description,
         });
-        watchedState.posts.push(
-          ...posts.map((post) => ({
+        const newPosts = posts
+          .map((post) => ({
             id: generateId(),
             feedId,
             title: post.title,
             link: post.link,
-          })),
-        );
-        watchedState.form.error = null;
+            description: post.description,
+          }));
+        watchedState.posts.unshift(...newPosts);
         watchedState.form.valid = true;
+        watchedState.form.error = null;
       })
       .catch((err) => {
         watchedState.form.valid = false;
         watchedState.form.error = err.cause ? err.cause.key : 'errors.network';
       });
   });
+
   checkForUpdates();
 });

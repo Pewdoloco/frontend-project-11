@@ -4,13 +4,12 @@ import i18next from './i18n';
 export default (state) => {
   const watchedState = onChange(state, (path, value) => {
     const rssInput = document.getElementById('rss-url');
-    const feedbackElement = document.querySelector('.feedback') || document.createElement('div');
+    const feedbackElement = document.querySelector('.feedback');
     const feedsContainer = document.getElementById('feeds-container');
-
-    if (!feedbackElement.classList.contains('feedback')) {
-      feedbackElement.classList.add('feedback', 'mt-2');
-      rssInput.after(feedbackElement);
-    }
+    const modal = document.getElementById('postModal');
+    const modalTitle = document.getElementById('postModalLabel');
+    const modalDescription = document.getElementById('postDescription');
+    const modalLink = document.getElementById('postLink');
 
     if (path === 'form.error') {
       if (value) {
@@ -32,7 +31,7 @@ export default (state) => {
       feedbackElement.textContent = i18next.t('success');
     }
 
-    if (path === 'feeds' || path === 'posts') {
+    if (path === 'feeds' || path === 'posts' || path === 'readPosts') {
       feedsContainer.innerHTML = '';
 
       const feedsSection = document.createElement('div');
@@ -58,8 +57,19 @@ export default (state) => {
       postsList.classList.add('list-group');
       state.posts.forEach((post) => {
         const li = document.createElement('li');
-        li.classList.add('list-group-item');
-        li.innerHTML = `<a href="${post.link}" target="_blank">${post.title}</a>`;
+        li.classList.add('list-group-item', 'd-flex', 'justify-content-between', 'align-items-center');
+        const isRead = state.readPosts.some((read) => read.postId === post.id);
+        const linkClass = isRead ? 'fw-normal' : 'fw-bold';
+        li.innerHTML = `
+          <a href="${post.link}" class="${linkClass}" target="_blank">${post.title}</a>
+          <button type="button" class="btn btn-primary btn-sm preview-post" data-post-id="${post.id}">
+            ${i18next.t('preview')}
+          </button>
+        `;
+        li.querySelector('.preview-post').addEventListener('click', () => {
+          watchedState.readPosts.push({ postId: post.id });
+          watchedState.modal.postId = post.id;
+        });
         postsList.appendChild(li);
       });
       postsSection.appendChild(postsList);
@@ -67,6 +77,24 @@ export default (state) => {
       feedsContainer.appendChild(feedsSection);
       feedsContainer.appendChild(postsSection);
     }
+
+    if (path === 'modal.postId' && value) {
+      const post = state.posts.find((p) => p.id === value);
+      if (post && modal && modalTitle && modalDescription && modalLink && window.bootstrap) {
+        modalTitle.textContent = post.title;
+        modalDescription.textContent = post.description;
+        modalLink.href = post.link;
+        const modalInstance = new window.bootstrap.Modal(modal);
+        modalInstance.show();
+      }
+    }
+  });
+
+  i18next.on('initialized', () => {
+    const readFullBtn = document.querySelector('#postLink');
+    const closeBtn = document.querySelector('#postModal .btn-secondary');
+    if (readFullBtn) readFullBtn.textContent = i18next.t('read_full');
+    if (closeBtn) closeBtn.textContent = i18next.t('close');
   });
 
   return watchedState;

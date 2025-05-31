@@ -10,6 +10,9 @@ const resources = {
       success: 'RSS feed added successfully',
       feeds: 'Feeds',
       posts: 'Posts',
+      preview: 'Preview',
+      read_full: 'Read Full Post',
+      close: 'Close',
       errors: {
         url: 'Must be a valid URL',
         required: 'URL is required',
@@ -27,6 +30,9 @@ const resources = {
       success: 'RSS-поток успешно добавлен',
       feeds: 'Фиды',
       posts: 'Посты',
+      preview: 'Просмотр',
+      read_full: 'Читать полностью',
+      close: 'Закрыть',
       errors: {
         url: 'Должен быть действительным URL',
         required: 'URL обязателен',
