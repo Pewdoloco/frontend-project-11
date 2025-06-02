@@ -21,7 +21,7 @@ export default (state) => {
         elements.rssInput.classList.add('is-invalid')
         elements.feedback.classList.add('text-danger')
         elements.feedback.textContent = i18next.t(value) || 'Unknown error'
-      } 
+      }
       else {
         elements.rssInput.classList.remove('is-invalid')
         elements.feedback.classList.remove('text-danger')
@@ -44,7 +44,7 @@ export default (state) => {
       if (value) {
         elements.feedback.classList.remove('text-danger', 'text-success')
         elements.feedback.textContent = i18next.t('loading')
-      } 
+      }
       else if (!state.form.error && !state.form.valid) {
         elements.feedback.textContent = ''
       }

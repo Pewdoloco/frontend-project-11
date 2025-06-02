@@ -99,7 +99,7 @@ const app = () => {
     if (key.startsWith('[placeholder]')) {
       const actualKey = key.replace('[placeholder]', '')
       element.placeholder = i18next.t(actualKey)
-    } 
+    }
     else {
       element.textContent = i18next.t(key)
     }
@@ -160,7 +160,7 @@ const app = () => {
         if (err.name === 'ValidationError') {
           const errorKey = err.errors[0] || 'errors.url'
           watchedState.form.error = errorKey
-        } 
+        }
         else {
           watchedState.form.error = err.cause?.key || 'errors.network'
         }
