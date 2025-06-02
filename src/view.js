@@ -21,7 +21,8 @@ export default (state) => {
         elements.rssInput.classList.add('is-invalid')
         elements.feedback.classList.add('text-danger')
         elements.feedback.textContent = i18next.t(value) || 'Unknown error'
-      } else {
+      } 
+      else {
         elements.rssInput.classList.remove('is-invalid')
         elements.feedback.classList.remove('text-danger')
         elements.feedback.textContent = ''
@@ -43,7 +44,8 @@ export default (state) => {
       if (value) {
         elements.feedback.classList.remove('text-danger', 'text-success')
         elements.feedback.textContent = i18next.t('loading')
-      } else if (!state.form.error && !state.form.valid) {
+      } 
+      else if (!state.form.error && !state.form.valid) {
         elements.feedback.textContent = ''
       }
     }
@@ -84,7 +86,7 @@ export default (state) => {
       state.posts.forEach((post) => {
         const li = document.createElement('li')
         li.classList.add('list-group-item', 'd-flex', 'justify-content-between', 'align-items-center')
-        const isRead = state.readPosts.some((read) => read.id === post.id)
+        const isRead = state.readPosts.some(read => read.id === post.id)
         const linkClass = isRead ? 'fw-normal' : 'fw-bold'
         const link = document.createElement('a')
         link.href = post.link || '#'
@@ -110,7 +112,7 @@ export default (state) => {
     }
 
     if (path === 'modal.postId' && value) {
-      const post = state.posts.find((p) => p.id === value)
+      const post = state.posts.find(p => p.id === value)
       if (post && elements.modal && elements.modalTitle && elements.modalDescription && elements.modalLink && window.bootstrap) {
         elements.modalTitle.textContent = post.title || 'Unnamed Post'
         elements.modalDescription.textContent = post.description || 'No description'

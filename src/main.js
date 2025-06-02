@@ -46,7 +46,7 @@ const app = () => {
 
   const watchedState = view(state)
 
-  const getProxiedUrl = (url) =>
+  const getProxiedUrl = url =>
     `https://allorigins.hexlet.app/get?disableCache=true&url=${encodeURIComponent(url)}`
 
   const fetchRSS = (url) => {
@@ -57,7 +57,7 @@ const app = () => {
         }
         return response.data.contents
       })
-      .catch((err) => {
+      .catch(() => {
         throw new Error('Network error', { cause: { key: 'errors.network' } })
       })
   }
@@ -68,13 +68,13 @@ const app = () => {
       return
     }
 
-    const promises = state.feeds.map((feed) => fetchRSS(feed.url)
+    const promises = state.feeds.map(feed => fetchRSS(feed.url)
       .then((xmlString) => {
         const { posts } = parseRSS(xmlString)
-        const existingLinks = new Set(state.posts.map((post) => post.link))
+        const existingLinks = new Set(state.posts.map(post => post.link))
         const newPosts = posts
-          .filter((post) => !existingLinks.has(post.link))
-          .map((post) => ({
+          .filter(post => !existingLinks.has(post.link))
+          .map(post => ({
             id: generateId(post.title || defaultValues.postTitle),
             feedId: feed.id,
             title: post.title || defaultValues.postTitle,
@@ -99,7 +99,8 @@ const app = () => {
     if (key.startsWith('[placeholder]')) {
       const actualKey = key.replace('[placeholder]', '')
       element.placeholder = i18next.t(actualKey)
-    } else {
+    } 
+    else {
       element.textContent = i18next.t(key)
     }
   })
@@ -118,7 +119,7 @@ const app = () => {
     watchedState.form.error = null
     watchedState.form.loading = true
 
-    const currentUrls = state.feeds.map((feed) => feed.url)
+    const currentUrls = state.feeds.map(feed => feed.url)
 
     const schema = yup.string()
       .url('errors.url')
@@ -141,7 +142,7 @@ const app = () => {
           title: feed.title || defaultValues.feedTitle,
           description: feed.description || defaultValues.feedDescription,
         })
-        const newPosts = posts.map((post) => ({
+        const newPosts = posts.map(post => ({
           id: generateId(post.title || defaultValues.postTitle),
           feedId,
           title: post.title || defaultValues.postTitle,
@@ -159,7 +160,8 @@ const app = () => {
         if (err.name === 'ValidationError') {
           const errorKey = err.errors[0] || 'errors.url'
           watchedState.form.error = errorKey
-        } else {
+        } 
+        else {
           watchedState.form.error = err.cause?.key || 'errors.network'
         }
       })
