@@ -13,7 +13,7 @@ export default {
     errors: {
       url: 'Ссылка должна быть валидным URL',
       required: 'Поле не должно быть пустым',
-      duplicate: 'RSS уже добавлен',
+      duplicate: 'RSS уже существует',
       network: 'Ошибка сети',
       invalid_rss: 'Ресурс не содержит валидный RSS',
     },
