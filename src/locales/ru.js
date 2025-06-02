@@ -3,7 +3,7 @@ export default {
     title: 'RSS Агрегатор',
     text: 'Введите URL RSS-потока',
     button: 'Добавить поток',
-    success: 'RSS успешно добавлен',
+    success: 'RSS успешно загружен',
     feeds: 'Фиды',
     posts: 'Посты',
     preview: 'Просмотр',
