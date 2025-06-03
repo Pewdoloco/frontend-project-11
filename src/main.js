@@ -4,6 +4,8 @@ import i18next from './i18n'
 import view from './view'
 import { parseRSS } from './parser'
 
+const UPDATE_INTERVAL_MS = 5000
+
 const generateId = (str) => {
   let hash = 0
   for (let i = 0; i < str.length; i++) {
@@ -44,7 +46,16 @@ const app = () => {
     updateError: null,
   }
 
-  const watchedState = view(state)
+  const elements = {
+    rssInput: document.getElementById('input-url'),
+    feedback: document.querySelector('.feedback'),
+    feedsContainer: document.getElementById('feeds-container'),
+    modal: document.getElementById('postModal'),
+    modalTitle: document.getElementById('postModalLabel'),
+    modalDescription: document.getElementById('postDescription'),
+    modalLink: document.getElementById('postLink'),
+    submitButton: document.querySelector('#rss-form button'),
+  }
 
   const getProxiedUrl = url =>
     `https://allorigins.hexlet.app/get?disableCache=true&url=${encodeURIComponent(url)}`
@@ -64,7 +75,7 @@ const app = () => {
 
   const checkForUpdates = () => {
     if (state.feeds.length === 0 || state.form.loading) {
-      setTimeout(checkForUpdates, 5000)
+      setTimeout(checkForUpdates, UPDATE_INTERVAL_MS)
       return
     }
 
@@ -90,84 +101,88 @@ const app = () => {
       }))
 
     Promise.allSettled(promises).then(() => {
-      setTimeout(checkForUpdates, 5000)
+      setTimeout(checkForUpdates, UPDATE_INTERVAL_MS)
     })
   }
 
-  document.querySelectorAll('[data-i18n]').forEach((element) => {
-    const key = element.dataset.i18n
-    if (key.startsWith('[placeholder]')) {
-      const actualKey = key.replace('[placeholder]', '')
-      element.placeholder = i18next.t(actualKey)
-    }
-    else {
-      element.textContent = i18next.t(key)
-    }
-  })
+  i18next.init().then(() => {  
+    const watchedState = view(state, elements)
+    
+    document.querySelectorAll('[data-i18n]').forEach(element => {
+      const key = element.dataset.i18n
+      if (key.startsWith('[placeholder]')) {
+        const actualKey = key.replace('[placeholder]', '')
+        element.placeholder = i18next.t(actualKey)
+      }
+      else {
+        element.textContent = i18next.t(key)
+      }
+    })
 
-  const readFullBtn = document.querySelector('#postLink')
-  const closeBtn = document.querySelector('#postModal .btn-secondary')
-  if (readFullBtn) readFullBtn.textContent = i18next.t('read_full')
-  if (closeBtn) closeBtn.textContent = i18next.t('close')
+    const readFullBtn = document.querySelector('#postLink')
+    const closeBtn = document.querySelector('#postModal .btn-secondary')
+    if (readFullBtn) readFullBtn.textContent = i18next.t('read_full')
+    if (closeBtn) closeBtn.textContent = i18next.t('close')
 
-  document.getElementById('rss-form').addEventListener('submit', (event) => {
-    event.preventDefault()
-    const formData = new FormData(event.target)
-    const rssUrl = formData.get('url') || ''
+    document.getElementById('rss-form').addEventListener('submit', (event) => {
+      event.preventDefault()
+      const formData = new FormData(event.target)
+      const rssUrl = formData.get('url') || ''
 
-    watchedState.form.valid = false
-    watchedState.form.error = null
-    watchedState.form.loading = true
+      watchedState.form.valid = false
+      watchedState.form.error = null
+      watchedState.form.loading = true
 
-    const currentUrls = state.feeds.map(feed => feed.url)
+      const currentUrls = state.feeds.map(feed => feed.url)
 
-    const schema = yup.string()
-      .url('errors.url')
-      .required('errors.required')
-      .notOneOf(currentUrls, 'errors.duplicate')
+      const schema = yup.string()
+        .url('errors.url')
+        .required('errors.required')
+        .notOneOf(currentUrls, 'errors.duplicate')
 
-    schema.validate(rssUrl, { abortEarly: false })
-      .then(() => {
-        return fetchRSS(rssUrl)
-      })
-      .then((xmlString) => {
-        const { feed, posts } = parseRSS(xmlString)
-        return { feed, posts, url: rssUrl }
-      })
-      .then(({ feed, posts, url }) => {
-        const feedId = generateId(feed.title || defaultValues.feedTitle)
-        watchedState.feeds.push({
-          id: feedId,
-          url,
-          title: feed.title || defaultValues.feedTitle,
-          description: feed.description || defaultValues.feedDescription,
+      schema.validate(rssUrl, { abortEarly: false })
+        .then(() => {
+          return fetchRSS(rssUrl)
         })
-        const newPosts = posts.map(post => ({
-          id: generateId(post.title || defaultValues.postTitle),
-          feedId,
-          title: post.title || defaultValues.postTitle,
-          link: post.link || defaultValues.postLink,
-          description: post.description || defaultValues.postDescription,
-        }))
-        watchedState.posts.unshift(...newPosts)
-        watchedState.form.valid = true
-        watchedState.form.error = null
-        watchedState.form.loading = false
-      })
-      .catch((err) => {
-        watchedState.form.valid = false
-        watchedState.form.loading = false
-        if (err.name === 'ValidationError') {
-          const errorKey = err.errors[0] || 'errors.url'
-          watchedState.form.error = errorKey
-        }
-        else {
-          watchedState.form.error = err.cause?.key || 'errors.network'
-        }
-      })
-  })
+        .then((xmlString) => {
+          const { feed, posts } = parseRSS(xmlString)
+          return { feed, posts, url: rssUrl }
+        })
+        .then(({ feed, posts, url }) => {
+          const feedId = generateId(feed.title || defaultValues.feedTitle)
+          watchedState.feeds.push({
+            id: feedId,
+            url,
+            title: feed.title || defaultValues.feedTitle,
+            description: feed.description || defaultValues.feedDescription,
+          })
+          const newPosts = posts.map(post => ({
+            id: generateId(post.title || defaultValues.postTitle),
+            feedId,
+            title: post.title || defaultValues.postTitle,
+            link: post.link || defaultValues.postLink,
+            description: post.description || defaultValues.postDescription,
+          }))
+          watchedState.posts.unshift(...newPosts)
+          watchedState.form.valid = true
+          watchedState.form.error = null
+          watchedState.form.loading = false
+        })
+        .catch((err) => {
+          watchedState.form.valid = false
+          watchedState.form.loading = false
+          if (err.name === 'ValidationError') {
+            const errorKey = err.errors[0] || 'errors.url'
+            watchedState.form.error = errorKey
+          }
+          else {
+            watchedState.form.error = err.cause?.key || 'errors.network'
+          }
+        })
+    })
 
-  checkForUpdates()
+    checkForUpdates()
+  })
 }
 
 app()

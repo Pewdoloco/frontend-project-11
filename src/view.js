@@ -1,18 +1,7 @@
 import onChange from 'on-change'
 import i18next from './i18n'
 
-export default (state) => {
-  const elements = {
-    rssInput: document.getElementById('input-url'),
-    feedback: document.querySelector('.feedback'),
-    feedsContainer: document.getElementById('feeds-container'),
-    modal: document.getElementById('postModal'),
-    modalTitle: document.getElementById('postModalLabel'),
-    modalDescription: document.getElementById('postDescription'),
-    modalLink: document.getElementById('postLink'),
-    submitButton: document.querySelector('#rss-form button'),
-  }
-
+export default (state, elements) => {
   let modalInstance = null
 
   const watchedState = onChange(state, (path, value) => {
