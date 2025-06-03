@@ -72,42 +72,41 @@ const app = () => {
         throw new Error('Network error', { cause: { key: 'errors.network' } })
       })
   }
-  
+
   i18next.init().then(() => {  
-    const watchedState = view(state, elements)
-    
+    const watchedState = view(state, elements)    
       const checkForUpdates = () => {
-    if (state.feeds.length === 0 || state.form.loading) {
-      setTimeout(checkForUpdates, UPDATE_INTERVAL_MS)
-      return
-    }
+      if (state.feeds.length === 0 || state.form.loading) {
+        setTimeout(checkForUpdates, UPDATE_INTERVAL_MS)
+        return
+      }
 
-    const promises = state.feeds.map(feed => fetchRSS(feed.url)
-      .then((xmlString) => {
-        const { posts } = parseRSS(xmlString)
-        const existingLinks = new Set(state.posts.map(post => post.link))
-        const newPosts = posts
-          .filter(post => !existingLinks.has(post.link))
-          .map(post => ({
-            id: generateId(post.title || defaultValues.postTitle),
-            feedId: feed.id,
-            title: post.title || defaultValues.postTitle,
-            link: post.link || defaultValues.postLink,
-            description: post.description || defaultValues.postDescription,
-          }))
-        if (newPosts.length > 0) {
-          watchedState.posts.unshift(...newPosts)
-        }
+      const promises = state.feeds.map(feed => fetchRSS(feed.url)
+        .then((xmlString) => {
+          const { posts } = parseRSS(xmlString)
+          const existingLinks = new Set(state.posts.map(post => post.link))
+          const newPosts = posts
+            .filter(post => !existingLinks.has(post.link))
+            .map(post => ({
+              id: generateId(post.title || defaultValues.postTitle),
+              feedId: feed.id,
+              title: post.title || defaultValues.postTitle,
+              link: post.link || defaultValues.postLink,
+              description: post.description || defaultValues.postDescription,
+            }))
+          if (newPosts.length > 0) {
+            watchedState.posts.unshift(...newPosts)
+          }
+        })
+        .catch((err) => {
+          watchedState.updateError = err.cause?.key || 'errors.network'
+        }))
+
+      Promise.allSettled(promises).then(() => {
+        setTimeout(checkForUpdates, UPDATE_INTERVAL_MS)
       })
-      .catch((err) => {
-        watchedState.updateError = err.cause?.key || 'errors.network'
-      }))
-
-    Promise.allSettled(promises).then(() => {
-      setTimeout(checkForUpdates, UPDATE_INTERVAL_MS)
-    })
-  }  
-    document.querySelectorAll('[data-i18n]').forEach(element => {
+    }  
+    document.querySelectorAll('[data-i18n]').forEach((element) => {
       const key = element.dataset.i18n
       if (key.startsWith('[placeholder]')) {
         const actualKey = key.replace('[placeholder]', '')
