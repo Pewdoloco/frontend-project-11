@@ -73,9 +73,9 @@ const app = () => {
       })
   }
 
-  i18next.init().then(() => {  
-    const watchedState = view(state, elements)    
-      const checkForUpdates = () => {
+  i18next.init().then(() => {
+    const watchedState = view(state, elements)
+    const checkForUpdates = () => {
       if (state.feeds.length === 0 || state.form.loading) {
         setTimeout(checkForUpdates, UPDATE_INTERVAL_MS)
         return
@@ -105,7 +105,7 @@ const app = () => {
       Promise.allSettled(promises).then(() => {
         setTimeout(checkForUpdates, UPDATE_INTERVAL_MS)
       })
-    }  
+    }
     document.querySelectorAll('[data-i18n]').forEach((element) => {
       const key = element.dataset.i18n
       if (key.startsWith('[placeholder]')) {
