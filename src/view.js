@@ -28,7 +28,7 @@ export default (state, elements) => {
       }
     }
 
-    if (path === 'form.loading') {
+    if (path === 'process.loading') {
       elements.submitButton.disabled = value
       if (value) {
         elements.feedback.classList.remove('text-danger', 'text-success')
@@ -71,7 +71,7 @@ export default (state, elements) => {
       postsTitle.textContent = i18next.t('posts')
       postsSection.appendChild(postsTitle)
       const postsList = document.createElement('ul')
-      postsList.classList.add('list-group')
+      postsList.className = 'posts list-group'
       state.posts.forEach((post) => {
         const li = document.createElement('li')
         li.classList.add('list-group-item', 'd-flex', 'justify-content-between', 'align-items-center')
@@ -87,10 +87,6 @@ export default (state, elements) => {
         button.className = 'btn btn-primary btn-sm preview-post'
         button.dataset.postId = post.id
         button.textContent = i18next.t('preview')
-        button.addEventListener('click', () => {
-          watchedState.readPosts.push({ id: post.id })
-          watchedState.modal.postId = post.id
-        })
         li.append(link, button)
         postsList.appendChild(li)
       })
