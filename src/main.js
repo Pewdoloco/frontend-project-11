@@ -6,7 +6,7 @@ import { parseRSS } from './parser'
 
 const UPDATE_INTERVAL_MS = 5000
 
-const generateId = str => {
+const generateId = (str) => {
   let hash = 0
   for (let i = 0; i < str.length; i++) {
     hash = ((hash << 5) - hash) + str.charCodeAt(i)
@@ -18,9 +18,9 @@ const generateId = str => {
 const getProxiedUrl = url =>
   `https://allorigins.hexlet.app/get?disableCache=true&url=${encodeURIComponent(url)}`
 
-const fetchRSS = url => {
+const fetchRSS = (url) => {
   return axios.get(getProxiedUrl(url))
-    .then(response => {
+    .then((response) => {
       if (!response.data.contents) {
         throw new Error('Invalid response', { cause: { key: 'errors.network' } })
       }
@@ -51,7 +51,7 @@ const addFeedAndPosts = (watchedState, feed, posts, url, generateId, defaultValu
 
 const loadRSS = (url, watchedState, generateId, defaultValues) => {
   return fetchRSS(url)
-    .then(xmlString => {
+    .then((xmlString) => {
       const { feed, posts } = parseRSS(xmlString)
       return { feed, posts, url }
     })
@@ -110,9 +110,9 @@ const app = () => {
     document.addEventListener('click', (event) => {
       const button = event.target.closest('.preview-post')
       if (button && button.closest('.posts')) {
-        const postId = button.dataset.postId;
+        const postId = button.dataset.postId
         watchedState.readPosts.push({ id: postId })
-        watchedState.modal.postId = postId;
+        watchedState.modal.postId = postId
       }
     })
 
@@ -125,7 +125,7 @@ const app = () => {
       const promises = state.feeds.map(feed => fetchRSS(feed.url)
         .then((xmlString) => {
           const { posts } = parseRSS(xmlString)
-          const existingLinks = new Set(state.posts.map((post) => post.link))
+          const existingLinks = new Set(state.posts.map(post => post.link))
           const newPosts = posts
             .filter(post => !existingLinks.has(post.link))
             .map(post => ({
